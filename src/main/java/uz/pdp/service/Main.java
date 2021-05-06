@@ -14,21 +14,21 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-public class NamozBot extends TelegramLongPollingBot {
+public class Main extends TelegramLongPollingBot {
     public static void main(String[] args) throws TelegramApiException {
-        System.out.println("Working...");
+        System.out.println(ProjectProperties.RUNNING_MESSAGE);
         ApiContextInitializer.init();
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
-        telegramBotsApi.registerBot(new NamozBot());
+        telegramBotsApi.registerBot(new Main());
     }
 
     @Override
     public String getBotUsername() {
-        return "Enter your telegram bot username...";
+        return ProjectProperties.BOT_USERNAME; //Enter your telegram bot username
     }
 
     public String getBotToken() {
-        return "Enter your telegram bot token...";
+        return ProjectProperties.BOT_TOKEN; //Enter your telegram bot token
     }
 
     @SneakyThrows
@@ -46,7 +46,7 @@ public class NamozBot extends TelegramLongPollingBot {
         sendChatAction.setAction(ActionType.TYPING);
         execute(sendChatAction);
 
-        if (text.equals("/start")) {
+        if (text.equals(ProjectProperties.START_COMMAND)) {
             sendMessage = namozVaqtiService.startCommand(chatId);
         } else {
             sendMessage = namozVaqtiService.getResult(chatId, text);
