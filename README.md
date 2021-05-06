@@ -1,6 +1,7 @@
 # namozvaqti
 
 Bu telegram bot islom.uz saytidan sizga joriy kundagi tanlagan hududizning namoz vaqtlarini olib kelib beradi.
+
 Proekt javani o'zida yozilgan.
 Ishlatilgan kutubxonalar: lombok, telegram-bots, slf4j, jsoup.
 
