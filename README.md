@@ -1,4 +1,4 @@
-# namozvaqti
+# prayer-time namoz vaqti
 
 Bu telegram bot islom.uz saytidan sizga joriy kundagi tanlagan hududizning namoz vaqtlarini olib kelib beradi.
 
