@@ -7,10 +7,14 @@ import org.jsoup.Connection;
 import org.jsoup.helper.HttpConnection;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.telegram.telegrambots.meta.api.methods.ActionType;
+import org.telegram.telegrambots.meta.api.methods.send.SendChatAction;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+import uz.pdp.model.ProjectProperties;
+import uz.pdp.model.Region;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -18,7 +22,15 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class NamozVaqtiService {
+public class PrayerTimeService {
+
+    public static SendChatAction getChatAction(Long chatId) {
+
+        SendChatAction sendChatAction = new SendChatAction();
+        sendChatAction.setChatId(chatId);
+        sendChatAction.setAction(ActionType.TYPING);
+        return sendChatAction;
+    }
 
     public String getData(String name) throws IOException {
         Integer code = getRegionCode(name);
@@ -32,8 +44,11 @@ public class NamozVaqtiService {
         Document document = connection.get();
         Elements aClass = document.getElementsByClass("row city_prayer_block");
         String header = aClass.get(0).getElementsByClass("col-12").text();
-        Elements bugunData = document.getElementsByClass("p_day bugun");
-        String[] data = bugunData.text().split(" ");
+        Elements todayData = document.getElementsByClass("p_day bugun");
+        if (todayData.isEmpty()){
+            todayData = document.getElementsByClass("juma bugun");
+        }
+        String[] data = todayData.text().split(" ");
         String date = localDateTime.getDayOfMonth() + "-" + localDateTime.getMonth() + " (" + data[2] + ")";
 
         String answer =
@@ -45,7 +60,7 @@ public class NamozVaqtiService {
                         "*Аср:*  " + data[6] + "\n" +
                         "*Шом (Ифтор):*  " + data[7] + "\n" +
                         "*Хуфтон:*  " + data[8] + "\n\n" +
-                        "\uD83D\uDCE4 *Маълумотлар islom.uz сайтидан олинди.*";
+                        ProjectProperties.FOOTER_MESSAGE;
         return answer;
     }
 
@@ -75,20 +90,18 @@ public class NamozVaqtiService {
     public List<Region> getRegionList() {
         List<Region> regions = new ArrayList<>();
 
-        for (int i = 0; i < ProjectProperties.REGION_CODE.length; i++)
+        for (int i = 0; i < ProjectProperties.REGION_CODE.length; i++) {
             regions.add(new Region(ProjectProperties.REGION_CODE[i], ProjectProperties.REGION_NAME[i]));
-
+        }
         regions.sort(Comparator.comparing(Region::getName));
         return regions;
     }
 
     public SendMessage startCommand(Long chatId) {
-        String text =
-                "*Намоз вақтлари* телеграм ботига хуш келибсиз.\nЎзингизга яқин туман тугмасини босинг";
         ReplyKeyboardMarkup buttons = getButtons();
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
-        sendMessage.setText(text);
+        sendMessage.setText(ProjectProperties.START_MESSAGE);
         sendMessage.setParseMode("markdown");
         sendMessage.setReplyMarkup(buttons);
         return sendMessage;

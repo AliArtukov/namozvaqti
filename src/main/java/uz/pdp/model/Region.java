@@ -1,4 +1,4 @@
-package uz.pdp.service;
+package uz.pdp.model;
 /*
 Created by Ali Artukov
 */
